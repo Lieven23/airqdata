@@ -302,3 +302,57 @@ def evaluate_near_sensors(start_date, end_date, lat=50.848, lon=4.351,
         if show:
             plt.show()
     return sensors, hourly_means
+  
+  def create_heatmap_near_sensors(start_date, end_date, lat=50.848, lon=4.351,
+                          radius=8, sensor_type="SDS011", show=True,
+                          **retrieval_kwargs):
+    """Create Sensor instances for all sensors of sensor_type near a
+    location and get their measurement data.
+    Coordinates and radius default to Brussels.
+    Args:
+        start_date: see Sensor.get_data
+        end_date: see Sensor.get_data
+        lat: see search_proximity
+        lon: see search_proximity
+        radius: see search_proximity
+        sensor_type: sensor type label, e.g. "SDS011" or "DHT22"
+        show: call plt.show; set to False to modify plots
+        retrieval_kwargs: keyword arguments to pass to retrieve function
+    Returns:
+        sensors: list of Sensor instances, sorted by sensor IDs
+        hourly_means: pandas dataframe of hourly measurement means of
+            all sensors
+    """
+    import seaborn as sns
+    
+    near_sensors = luftdaten.search_proximity(lat=lat, lon=lon, radius=radius)
+
+    # Filter by sensor type
+    near_sensors = near_sensors[near_sensors["sensor_type"] == sensor_type]
+
+    # Create list of Sensor instances
+    sensors = [luftdaten.Sensor(sensor_id, **retrieval_kwargs)
+               for sensor_id in near_sensors.index]
+
+    sensors.sort(key=lambda sensor: sensor.sensor_id)
+    hourly_means_pieces = []
+    
+    for sensor in sensors:
+        sensor.get_measurements(start_date, end_date, **retrieval_kwargs)
+        try:
+            sensor_hourly_means = sensor.get_hourly_means()
+        except AttributeError:
+            continue
+        else:
+            sensor_hourly_means['sensor_id'] = sensor.sensor_id
+            hourly_means_pieces.append(sensor_hourly_means)
+    
+    hourly_means = pd.concat(hourly_means_pieces)
+           
+    fig, ax = plt.subplots(figsize=(34,10))
+    hourly_means['timestamp'] = hourly_means.index.strftime('%d%b|%Hh')
+    cmap = sns.diverging_palette(220, 20, sep=20, as_cmap=True)
+    grouped_result = hourly_means.pivot_table(index='sensor_id', columns=['timestamp'], values='pm2.5')
+    ax = sns.heatmap(grouped_result, xticklabels=2)
+    
+    return hourly_means
