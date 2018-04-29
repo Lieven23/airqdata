@@ -324,13 +324,13 @@ def create_heatmap_near_sensors(start_date, end_date, lat=50.848, lon=4.351,
     """
     import seaborn as sns
     
-    near_sensors = luftdaten.search_proximity(lat=lat, lon=lon, radius=radius)
+    near_sensors = search_proximity(lat=lat, lon=lon, radius=radius)
 
     # Filter by sensor type
     near_sensors = near_sensors[near_sensors["sensor_type"] == sensor_type]
 
     # Create list of Sensor instances
-    sensors = [luftdaten.Sensor(sensor_id, **retrieval_kwargs)
+    sensors = [Sensor(sensor_id, **retrieval_kwargs)
                for sensor_id in near_sensors.index]
 
     sensors.sort(key=lambda sensor: sensor.sensor_id)
