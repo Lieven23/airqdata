@@ -198,7 +198,6 @@ class Sensor(BaseSensor):
         # Remove invalid values
         self.measurements[dead_5_consecutive] = pd.np.nan
 
-
 def search_proximity(lat=50.848, lon=4.351, radius=8):
     """Find sensors within given radius from a location.
 
@@ -303,7 +302,7 @@ def evaluate_near_sensors(start_date, end_date, lat=50.848, lon=4.351,
             plt.show()
     return sensors, hourly_means
   
-  def create_heatmap_near_sensors(start_date, end_date, lat=50.848, lon=4.351,
+def create_heatmap_near_sensors(start_date, end_date, lat=50.848, lon=4.351,
                           radius=8, sensor_type="SDS011", show=True,
                           **retrieval_kwargs):
     """Create Sensor instances for all sensors of sensor_type near a
