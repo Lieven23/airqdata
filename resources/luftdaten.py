@@ -9,6 +9,7 @@ import requests
 import pandas as pd
 from pandas.io.json import json_normalize
 from matplotlib import pyplot as plt
+import seaborn as sns
 
 from utils import (CACHE_DIR, BaseSensor, retrieve, haversine,
                    label_coordinates)
@@ -322,7 +323,6 @@ def create_heatmap_near_sensors(start_date, end_date, lat=50.848, lon=4.351,
         hourly_means: pandas dataframe of hourly measurement means of
             all sensors
     """
-    import seaborn as sns
     
     near_sensors = search_proximity(lat=lat, lon=lon, radius=radius)
 
