@@ -20,6 +20,7 @@ from resources import influencair
 from resources import luftdaten
 from resources import madavi
 from resources import irceline
+from resources import leuvenair
 from resources.utils import EQUIVALENT_PHENOMENA, describe
 
 
